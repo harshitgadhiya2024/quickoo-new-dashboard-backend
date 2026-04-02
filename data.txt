@@ -1,0 +1,41 @@
+request input:
+from: {"address": "", "latitude": "", "longitude": ""}
+to: {"address": "", "latitude": "", "longitude": ""}
+stops: [{"address": "", "latitude": "", "longitude": ""}, {"address": "", "latitude": "", "longitude": ""}]
+flight_number (optional)
+pickup_date
+pickup_time
+vehicle_class: 
+first_name
+last_name
+email
+phonenumber
+special_request (optional)
+route_distance
+total_price
+pricing_breakdown with vat details
+is_payment_paid
+transcation_id
+
+Data want to store
+order_id
+from: {"address": "", "latitude": "", "longitude": ""}
+to: {"address": "", "latitude": "", "longitude": ""}
+stops: [{"address": "", "latitude": "", "longitude": ""}, {"address": "", "latitude": "", "longitude": ""}]
+flight_number (optional)
+pickup_date
+pickup_time
+vehicle_class: 
+first_name
+last_name
+email
+phonenumber
+special_request (optional)
+route_distance
+total_price
+pricing_breakdown with vat details
+is_payment_paid
+transcation_id
+status: by default not started
+created_at
+update_at

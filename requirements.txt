@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+motor
+pydantic-settings
+email-validator
+passlib[argon2]
+aiosmtplib
+python-jose[cryptography]
+aioboto3
+python-multipart
+stripe
