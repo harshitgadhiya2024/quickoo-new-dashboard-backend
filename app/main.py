@@ -28,6 +28,9 @@ app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 _CORS_ORIGINS = [
     "https://backend.quickoo.co.uk",
+    "https://www.backend.quickoo.co.uk",
+    "https://quickoo.co.uk",
+    "https://www.quickoo.co.uk",
     "http://0.0.0.0:8080",
 ]
 
