@@ -1,5 +1,5 @@
 from datetime import date, datetime, time, timezone
-from uuid import uuid4
+from random import randint
 
 from pymongo import ReturnDocument
 
@@ -20,11 +20,21 @@ def _mongo_pickup_date(value: date) -> datetime:
     return datetime(value.year, value.month, value.day, 0, 0, 0, tzinfo=timezone.utc)
 
 
+async def _generate_order_id() -> str:
+    db = get_database()
+    for _ in range(20):
+        candidate = f"QPL-{randint(0, 9999):04d}"
+        exists = await db.orders.find_one({"order_id": candidate}, {"_id": 1})
+        if not exists:
+            return candidate
+    raise ValueError("Could not generate a unique order ID. Please try again.")
+
+
 async def create_order(payload: OrderCreateRequest) -> OrderResponse:
     db = get_database()
     now = datetime.now(timezone.utc)
     document = {
-        "order_id": str(uuid4()),
+        "order_id": await _generate_order_id(),
         "from": payload.from_.model_dump(),
         "to": payload.to.model_dump(),
         "stops": [s.model_dump() for s in payload.stops],

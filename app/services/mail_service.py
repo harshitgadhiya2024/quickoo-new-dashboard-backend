@@ -5,6 +5,7 @@ from typing import Any
 import aiosmtplib
 
 from app.core.config import get_settings
+from app.db.mongodb import get_database
 
 
 def _format_location(loc: Any) -> str:
@@ -231,6 +232,8 @@ async def send_admin_created_email(new_admin_email: str) -> None:
 
 async def send_order_created_email(order_data: dict) -> None:
     settings = get_settings()
+    vehicle_class_value = order_data.get("vehicle_class")
+    vehicle_class_display = await _resolve_vehicle_class_name(vehicle_class_value)
 
     message = EmailMessage()
     message["From"] = settings.smtp_from
@@ -244,7 +247,7 @@ async def send_order_created_email(order_data: dict) -> None:
         f"Phone: {order_data.get('phonenumber')}\n"
         f"Pickup Date: {order_data.get('pickup_date')}\n"
         f"Pickup Time: {order_data.get('pickup_time')}\n"
-        f"Vehicle Class: {order_data.get('vehicle_class')}\n"
+        f"Vehicle Class: {vehicle_class_display}\n"
         f"Route Distance: {order_data.get('route_distance')}\n"
         f"Total Price: {order_data.get('total_price')}\n"
         f"Payment Paid: {order_data.get('is_payment_paid')}\n"
@@ -265,6 +268,21 @@ async def send_order_created_email(order_data: dict) -> None:
         username=settings.smtp_user,
         password=settings.smtp_pass,
     )
+
+
+async def _resolve_vehicle_class_name(vehicle_class_value: Any) -> str:
+    if not vehicle_class_value:
+        return "—"
+
+    db = get_database()
+    vehicle_class = await db.vehicle_classes.find_one(
+        {"vehicle_class_id": str(vehicle_class_value)},
+        {"class_name": 1},
+    )
+    if vehicle_class and vehicle_class.get("class_name"):
+        return str(vehicle_class["class_name"])
+
+    return str(vehicle_class_value)
 
 
 async def send_order_confirmation_to_customer(order_data: dict) -> None:
