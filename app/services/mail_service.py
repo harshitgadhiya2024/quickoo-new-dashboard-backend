@@ -274,13 +274,17 @@ async def _resolve_vehicle_class_name(vehicle_class_value: Any) -> str:
     if not vehicle_class_value:
         return "—"
 
-    db = get_database()
-    vehicle_class = await db.vehicle_classes.find_one(
-        {"vehicle_class_id": str(vehicle_class_value)},
-        {"class_name": 1},
-    )
-    if vehicle_class and vehicle_class.get("class_name"):
-        return str(vehicle_class["class_name"])
+    try:
+        db = get_database()
+        vehicle_class = await db.vehicle_classes.find_one(
+            {"vehicle_class_id": str(vehicle_class_value)},
+            {"class_name": 1},
+        )
+        if vehicle_class and vehicle_class.get("class_name"):
+            return str(vehicle_class["class_name"])
+    except Exception:
+        # Never block email delivery if class-name lookup fails.
+        return str(vehicle_class_value)
 
     return str(vehicle_class_value)
 
