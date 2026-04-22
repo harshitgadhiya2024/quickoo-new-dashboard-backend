@@ -196,7 +196,7 @@ def _build_customer_confirmation_html(order_data: dict) -> str:
               <span style="display:inline-block;padding:4px 10px;border-radius:999px;background:{payment_color};color:#ffffff;font-weight:600;">{payment_badge}</span>
             </p>
           </div>
-          <p style="margin:28px 0 0;font-size:13px;line-height:1.6;color:#94a3b8;">This email summarises the journey details you provided and the total for your booking.</p>
+          <p style="margin:28px 0 0;font-size:13px;line-height:1.6;color:#94a3b8;">This email summarises the journey details you provided and the total amount for your booking.</p>
         </td></tr>
         <tr><td style="padding:20px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;">
           <p style="margin:0;font-size:13px;color:#64748b;text-align:center;">Quickoo · Need help? Reply to this email.</p>
@@ -291,9 +291,14 @@ async def send_order_confirmation_to_customer(order_data: dict) -> None:
     if not to_email or not str(to_email).strip():
         return
 
-    plain = _build_customer_confirmation_plain(order_data)
-    html_body = _build_customer_confirmation_html(order_data)
-    order_ref = order_data.get("order_id") or "booking"
+    normalized_order_data = dict(order_data)
+    normalized_order_data["vehicle_class"] = await _resolve_vehicle_class_name(
+        normalized_order_data.get("vehicle_class")
+    )
+
+    plain = _build_customer_confirmation_plain(normalized_order_data)
+    html_body = _build_customer_confirmation_html(normalized_order_data)
+    order_ref = normalized_order_data.get("order_id") or "booking"
 
     message = EmailMessage()
     message["From"] = settings.smtp_from
